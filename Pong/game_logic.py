@@ -1,6 +1,6 @@
 import pygame
 from constants import *
-from game_objects import Ball, Paddle
+from game_objects import Ball
 from opponent import Opponent
 from player import Player
 from utils import keep_within_bounds
@@ -16,7 +16,6 @@ class Game:
         self.player = Player(WIDTH - 20, HEIGHT / 2 - 70, RED)
         self.opponent = Opponent(10, HEIGHT / 2 - 70, GREEN)
 
-        # Initialize the game state
         self.start_game_values()
 
     def start_game_values(self):
@@ -53,11 +52,11 @@ class Game:
         pygame.display.flip()
 
     def draw_scoreboard_frame(self):
-        pygame.draw.rect(self.screen, WHITE, FRAME_RECT, 2)  # Draw the outer frame
+        pygame.draw.rect(self.screen, WHITE, FRAME_RECT, 2)
 
     def draw_midline(self):
         mid_x = WIDTH // 2  # Calculate the x position for the middle line
-        pygame.draw.line(self.screen, WHITE, (mid_x, SCOREBOARD_HEIGHT), (mid_x, HEIGHT), 2)  # Draw the midline
+        pygame.draw.line(self.screen, WHITE, (mid_x, SCOREBOARD_HEIGHT), (mid_x, HEIGHT), 2)
 
     def display_score(self):
         player_text = FONT.render(f"{self.player.score}", True, WHITE)
@@ -105,20 +104,20 @@ class Game:
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 self.player.speed = 0    # Stop the paddle when key is released
 
-    def check_timer(self):
+    def check_game_timer(self):
         if self.timer_seconds > 0:
             self.timer_seconds -= 1 / 60  # Decrease timer by 1 second (at 60 FPS)
         else:
-            self.check_winner()  # Check for winner when time runs out
+            self.check_for_winner()  # Check for winner when time runs out
 
     def update_game_state(self):
         """Move the player paddle based on speed"""
-        self.player.move()
+        self.player.move_paddle()
 
         # Prevent the player paddle from moving off-screen and inside the scoreboard
         keep_within_bounds(self.player.paddle.rect, SCOREBOARD_HEIGHT, HEIGHT)
 
-        # Update ball and opponent paddle
+        # Handle ball movement and check for collisions or scoring events
         scored = self.ball.movement(self.player.paddle, self.opponent.paddle)
 
         # Check if the ball scored and update the winner if needed
@@ -128,14 +127,13 @@ class Game:
             elif scored == 'opponent':
                 self.player.increase_score()
             self.ball.restart()  # Reset ball position after scoring
-            self.check_winner()  # Check if this point results in a winner
+            self.check_for_winner()
 
-        # Move the opponent paddle
-        self.opponent.move(self.ball)
+        self.opponent.move_paddle(self.ball)
 
-        self.check_timer()
+        self.check_game_timer()
 
-    def check_winner(self):
+    def check_for_winner(self):
         if self.player.score == 11:
             self.game_over = True
             self.winner_text = winner_texts.player_wins

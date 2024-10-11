@@ -13,7 +13,7 @@ class Player:
     def increase_score(self):
             self.score += 1
 
-    def move(self):
+    def move_paddle(self):
         self.paddle.rect.y += self.speed
 
     def draw_paddle(self, screen):

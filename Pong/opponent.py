@@ -14,13 +14,13 @@ class Opponent:
 
     def increase_score(self):
             self.score += 1
-            
-    def move(self, ball):
+
+    def move_paddle(self, ball):
         """Simple function to move the opponent paddle"""
         ai_reaction = random.random()
 
         if ai_reaction < REACTION_SPEED:
-            return  # The AI misses the ball
+            return  # The opponent misses the ball
 
         # Move the opponent paddle only when the ball is on the opponent's side
         if ball.speed_x < 0:  # Ball is moving towards the opponent

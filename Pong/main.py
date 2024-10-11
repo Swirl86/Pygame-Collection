@@ -1,7 +1,7 @@
 import pygame
 import sys
-from game_logic import Game  # Ensure Game class is implemented properly
-from constants import *      # Ensure constants are defined correctly
+from game_logic import Game
+from constants import *
 
 # Initialize Pygame
 pygame.init()
