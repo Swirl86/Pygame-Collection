@@ -44,8 +44,8 @@ class Game:
         self.draw_midline()
         self.display_score()
         self.ball.draw(self.screen)
-        self.player.draw(self.screen)
-        self.opponent.draw(self.screen)
+        self.player.draw_paddle(self.screen)
+        self.opponent.draw_paddle(self.screen)
 
         if self.game_over:
             self.display_winner()

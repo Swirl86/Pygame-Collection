@@ -7,6 +7,7 @@ class Ball:
         self.rect = BALL_RECT
         self.speed_x = BALL_SPEED_X
         self.speed_y = BALL_SPEED_Y
+        self.min_speed = BALL_MIN_SPEED
 
     def movement(self, player_paddle, opponent_paddle):
         # Update the ball's position
@@ -20,15 +21,19 @@ class Ball:
         if self.rect.top <= SCOREBOARD_HEIGHT or self.rect.bottom >= HEIGHT:
             self.speed_y *= -1  # Reverse the vertical direction
 
+        # Ball collides with player or opponent paddles
+        if self.rect.colliderect(player_paddle.rect) or self.rect.colliderect(opponent_paddle.rect):
+            self.speed_x *= -1  # Reverse the horizontal direction
+
+            # Ensure that the speed in X direction does not become too low
+            if abs(self.speed_x) < self.min_speed:
+                self.speed_x = self.min_speed if self.speed_x > 0 else -self.min_speed
+
         # Check if the ball goes past the left or right boundaries
         if self.rect.left <= 0:
             return 'opponent'  # Opponent scores a point
         if self.rect.right >= WIDTH:
             return 'player'    # Player scores a point
-
-        # Ball collides with player or opponent paddles
-        if self.rect.colliderect(player_paddle.rect) or self.rect.colliderect(opponent_paddle.rect):
-            self.speed_x *= -1  # Reverse the horizontal direction
 
         return None  # No score occurred
 

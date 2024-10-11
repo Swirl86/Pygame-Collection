@@ -16,7 +16,7 @@ class Opponent:
             self.score += 1
             
     def move(self, ball):
-        """Function to move the opponent paddle (simple AI)"""
+        """Simple function to move the opponent paddle"""
         ai_reaction = random.random()
 
         if ai_reaction < REACTION_SPEED:
@@ -32,8 +32,7 @@ class Opponent:
         # Prevent opponent from moving out of the screen
         keep_within_bounds(self.paddle.rect, SCOREBOARD_HEIGHT, HEIGHT)
 
-    def draw(self, screen):
-        """Draw the opponent's paddle."""
+    def draw_paddle(self, screen):
         self.paddle.draw(screen)
 
     def restart(self):

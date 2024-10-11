@@ -16,8 +16,7 @@ class Player:
     def move(self):
         self.paddle.rect.y += self.speed
 
-    def draw(self, screen):
-        """Draw the player's paddle."""
+    def draw_paddle(self, screen):
         self.paddle.draw(screen)
 
     def restart(self):

@@ -20,7 +20,9 @@ SCOREBOARD_PADDING = 10  # Padding inside the scoreboard frame
 # Game variables
 BALL_SPEED_X = 7 * (-1)  # Initially moves to the left
 BALL_SPEED_Y = 7
-BALL_RECT = pygame.Rect(WIDTH / 2 - 15, HEIGHT / 2 - 15, 30, 30)
+BALL_MIN_SPEED = 5
+BALL_RECT = pygame.Rect(WIDTH / 2 - 15, HEIGHT / 2 - 15, 20, 20)
+
 PADDLE_WIDTH = 10
 PADDLE_HEIGHT = 100
 FRAME_RECT = pygame.Rect(0, 0, WIDTH, SCOREBOARD_HEIGHT)
