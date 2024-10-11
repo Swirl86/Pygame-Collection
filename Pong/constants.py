@@ -36,12 +36,13 @@ REACTION_SPEED = 0.3  # 30% chance of not reacting to the ball
 
 # Fonts variables
 XS_FONT = pygame.font.Font(None, 16)
-TIMER_FONT = pygame.font.Font(None, 18)
+S_FONT = pygame.font.Font(None, 18)
 FONT = pygame.font.Font(None, 28)
-RESTART_FONT = pygame.font.Font(None, 36)
-WINNER_FONT = pygame.font.Font(None, 74)
+M_FONT = pygame.font.Font(None, 36)
+L_FONT = pygame.font.Font(None, 52)
+XL_FONT = pygame.font.Font(None, 74)
 
 # Timer variable
 TIMER_SECONDS = 300  # 5 minutes
-TIMER_FONT = pygame.font.Font(None, 18)
+S_FONT = pygame.font.Font(None, 18)
 

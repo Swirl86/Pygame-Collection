@@ -56,13 +56,19 @@ class Game:
 
     def draw_midline(self):
         mid_x = WIDTH // 2  # Calculate the x position for the middle line
-        pygame.draw.line(self.screen, WHITE, (mid_x, SCOREBOARD_HEIGHT), (mid_x, HEIGHT), 2)
+        line_length = 10  # Length of each dash
+        space_length = 5  # Space between dashes
+        y_start = SCOREBOARD_HEIGHT  # Starting y position of the line
+        y_end = HEIGHT  # Ending y position of the line
+
+        for y in range(y_start, y_end, line_length + space_length):
+            pygame.draw.line(self.screen, WHITE, (mid_x, y), (mid_x, y + line_length), 2)
 
     def display_score(self):
         player_text = FONT.render(f"{self.player.score}", True, WHITE)
         opponent_text = FONT.render(f"{self.opponent.score}", True, WHITE)
         pong_text = FONT.render("PYGAME PONG", True, WHITE)
-        timer_text = TIMER_FONT.render(f"Time: {int(self.timer_seconds) // 60}:{int(self.timer_seconds) % 60:02d}", True, WHITE)
+        timer_text = S_FONT.render(f"Time: {int(self.timer_seconds) // 60}:{int(self.timer_seconds) % 60:02d}", True, WHITE)
         fps_text = XS_FONT.render(f"FPS:  {int(self.clock.get_fps())}", True, WHITE)
 
         """Display positions for the scores and title"""
@@ -73,11 +79,11 @@ class Game:
         self.screen.blit(fps_text, (10, 10))  # Draw FPS text at the top-left corner
 
     def display_winner(self):
-        text = WINNER_FONT.render(self.winner_text, True, WHITE)
+        text = XL_FONT.render(self.winner_text, True, WHITE)
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))  # Center the text
         self.screen.blit(text, text_rect)
 
-        restart_text = RESTART_FONT.render("Click to Restart", True, WHITE)
+        restart_text = M_FONT.render("Click to Restart", True, WHITE)
         restart_rect = restart_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))  # Center the button text
         self.screen.blit(restart_text, restart_rect)
 

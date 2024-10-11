@@ -1,7 +1,8 @@
 import pygame
 import sys
 from game_logic import Game
-from constants import *
+from constants import WIDTH, HEIGHT
+from start_screen import draw_start_screen
 
 # Initialize Pygame
 pygame.init()
@@ -13,8 +14,15 @@ pygame.display.set_caption('Pong')
 # Create a clock for controlling the game speed
 clock = pygame.time.Clock()
 
+# Show start screen
+draw_start_screen(screen)
+
 # Create a game instance
 game = Game(screen, clock)
+
+# Render the game elements on the screen and introduce a brief pause before the ball begins to move
+game.draw_game_elements()
+pygame.time.delay(300)
 
 # Main game loop
 while True:
