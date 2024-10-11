@@ -1,6 +1,3 @@
-class WinnerTexts:
-    player_wins = "Player wins!"
-    opponent_wins = "Opponent wins!"
-    tie = "It's a tie!"
-
-winner_texts = WinnerTexts()
+player_wins = "Player Wins!"
+opponent_wins = "Opponent Wins!"
+tie = "It's a Tie!"

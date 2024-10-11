@@ -1,6 +1,6 @@
 import pygame
 import sys
-from game_logic import Game
+from game import Game
 from constants import WIDTH, HEIGHT
 from start_screen import draw_start_screen
 
