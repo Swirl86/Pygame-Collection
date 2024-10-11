@@ -18,6 +18,7 @@ SCOREBOARD_HEIGHT = 60  # Height of the scoreboard area
 SCOREBOARD_PADDING = 10  # Padding inside the scoreboard frame
 
 # Game variables
+MAX_SCORE = 11
 BALL_SPEED_X = 7 * (-1)  # Initially moves to the left
 BALL_SPEED_Y = 7
 BALL_MIN_SPEED = 5
@@ -34,6 +35,9 @@ OPPONENT_SPEED = 7
 # The lower the value, the faster the reaction
 REACTION_SPEED = 0.3  # 30% chance of not reacting to the ball
 
+# Timer variable
+TIMER_SECONDS = 300  # 5 minutes
+
 # Fonts variables
 XS_FONT = pygame.font.Font(None, 16)
 S_FONT = pygame.font.Font(None, 18)
@@ -42,7 +46,4 @@ M_FONT = pygame.font.Font(None, 36)
 L_FONT = pygame.font.Font(None, 52)
 XL_FONT = pygame.font.Font(None, 74)
 
-# Timer variable
-TIMER_SECONDS = 300  # 5 minutes
-S_FONT = pygame.font.Font(None, 18)
-
+PIXEL_FONT = pygame.font.Font("fonts/pixel_font.ttf", 64)

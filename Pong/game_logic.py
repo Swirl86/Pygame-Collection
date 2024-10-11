@@ -1,9 +1,10 @@
+import sys
 import pygame
 from constants import *
 from game_objects import Ball
 from opponent import Opponent
 from player import Player
-from utils import keep_within_bounds
+from utils import *
 from winner_texts import winner_texts
 
 class Game:
@@ -79,10 +80,21 @@ class Game:
         self.screen.blit(fps_text, (10, 10))  # Draw FPS text at the top-left corner
 
     def display_winner(self):
-        text = XL_FONT.render(self.winner_text, True, WHITE)
+        # Draw the background
+        draw_transparent_overlay(self.screen)
+        draw_gradient_lines(self.screen)
+
+        # Render the winner text and position it in the center
+        text = PIXEL_FONT.render(self.winner_text, True, WHITE)
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))  # Center the text
         self.screen.blit(text, text_rect)
 
+        # Create a border for the winner text
+        border_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
+        border_rect.inflate_ip(20, 20)  # Add some padding to the border
+        pygame.draw.rect(self.screen, WHITE, border_rect, 3)  # Draw the border
+
+        # Render and position the restart text
         restart_text = M_FONT.render("Click to Restart", True, WHITE)
         restart_rect = restart_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))  # Center the button text
         self.screen.blit(restart_text, restart_rect)
@@ -94,6 +106,7 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                    sys.exit()  # Exit the game if the window is closed
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if restart_rect.collidepoint(event.pos):
                         waiting_for_click = False  # Exit the loop to reset the game
@@ -140,10 +153,10 @@ class Game:
         self.check_game_timer()
 
     def check_for_winner(self):
-        if self.player.score == 11:
+        if self.player.score == MAX_SCORE:
             self.game_over = True
             self.winner_text = winner_texts.player_wins
-        elif self.opponent.score == 11:
+        elif self.opponent.score == MAX_SCORE:
             self.game_over = True
             self.winner_text = winner_texts.opponent_wins
         elif self.timer_seconds <= 0:  # Check if the time has run out

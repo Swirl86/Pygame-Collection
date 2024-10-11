@@ -1,16 +1,14 @@
 import pygame
 import sys
 from constants import *
+from utils import draw_gradient_lines
 
 def draw_start_screen(screen):
-    for i in range(0, HEIGHT, 2):
-        # Ensure the RGB values are within valid range (0-255)
-        blue_value = min(255, i // 2)  # Max blue value is 255
-        color = (0, 0, blue_value)  # RGB tuple
-        pygame.draw.line(screen, color, (0, i), (WIDTH, i))
+    # Draw gradient lines for the background
+    draw_gradient_lines(screen)
 
     # Render the title text
-    title_text = XL_FONT.render("PYGAME PONG", True, WHITE)
+    title_text = PIXEL_FONT.render("PYGAME PONG", True, WHITE)
     title_rect = title_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
     screen.blit(title_text, title_rect)
 
