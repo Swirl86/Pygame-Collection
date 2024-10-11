@@ -10,26 +10,33 @@ class Ball:
         self.min_speed = BALL_MIN_SPEED
 
     def movement(self, player_paddle, opponent_paddle):
-        # Update the ball's position
+        # Update the ball's position based on its speed
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
 
-        # Keep ball within screen bounds
+        # Keep the ball within the screen bounds, considering the scoreboard height
         keep_within_bounds(self.rect, SCOREBOARD_HEIGHT, HEIGHT)
 
         # Bounce the ball off the top and bottom walls
         if self.rect.top <= SCOREBOARD_HEIGHT or self.rect.bottom >= HEIGHT:
             self.speed_y *= -1  # Reverse the vertical direction
 
-        # Ball collides with player or opponent paddles
+        # Check for collision with player or opponent paddles
         if self.rect.colliderect(player_paddle.rect) or self.rect.colliderect(opponent_paddle.rect):
-            self.speed_x *= -1  # Reverse the horizontal direction
+            # Adjust ball position to prevent it from getting stuck inside the paddle
+            if self.rect.colliderect(player_paddle.rect):
+                self.rect.right = player_paddle.rect.left  # Move the ball to the left of the player paddle
+            elif self.rect.colliderect(opponent_paddle.rect):
+                self.rect.left = opponent_paddle.rect.right  # Move the ball to the right of the opponent paddle
 
-            # Ensure that the speed in X direction does not become too low
+            # Reverse the horizontal direction of the ball
+            self.speed_x *= -1
+
+            # Ensure that the speed in the X direction does not become too low
             if abs(self.speed_x) < self.min_speed:
                 self.speed_x = self.min_speed if self.speed_x > 0 else -self.min_speed
 
-        # Check if the ball goes past the left or right boundaries
+        # Check if the ball goes past the left or right boundaries of the screen
         if self.rect.left <= 0:
             return 'opponent'  # Opponent scores a point
         if self.rect.right >= WIDTH:
