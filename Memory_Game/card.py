@@ -3,7 +3,7 @@ from constants import *
 
 class Card:
     def __init__(self, icon):
-        self.icon = icon  # Icon type (e.g., DONUT, SQUARE)
+        self.icon = icon
         self.is_flipped = False
         self.is_matched = False
 
@@ -21,11 +21,10 @@ class Card:
                 self.draw_icon(screen, LINE_COLOR, x, y)
             elif self.icon == 'oval':
                 self.draw_icon(screen, OVAL_COLOR, x, y)
-            # Check if icon is a number or symbol
             elif self.icon in NUMBERS or self.icon in SYMBOLS:
                 self.draw_text(screen, x, y)
         else:
-            pygame.draw.rect(screen, (0, 0, 0), (x, y, CARD_SIZE, CARD_SIZE))
+            pygame.draw.rect(screen, BLACK, (x, y, CARD_SIZE, CARD_SIZE))
 
         pygame.draw.rect(screen, border_color, (x, y, CARD_SIZE, CARD_SIZE), BORDER_WIDTH)
 
@@ -36,7 +35,7 @@ class Card:
 
         if self.icon == 'donut':
             pygame.draw.circle(screen, color, (x + half, y + half), half - 5)
-            pygame.draw.circle(screen, (255, 255, 255), (x + half, y + half), quarter - 5)
+            pygame.draw.circle(screen, WHITE, (x + half, y + half), quarter - 5)
         elif self.icon == 'square':
             pygame.draw.rect(screen, color, (x + quarter, y + quarter, CARD_SIZE - half, CARD_SIZE - half))
         elif self.icon == 'diamond':
@@ -55,8 +54,6 @@ class Card:
 
     def draw_text(self, screen, x, y):
         """Draw numbers or symbols as text on the card."""
-        font = pygame.font.Font(None, 72)  # Font size 72 (adjust as needed)
-        text_color = (0, 0, 0)  # Black text color (adjust for visibility)
-        text_surface = font.render(self.icon, True, text_color)
+        text_surface = L_FONT.render(self.icon, True, BLACK)
         text_rect = text_surface.get_rect(center=(x + CARD_SIZE // 2, y + CARD_SIZE // 2))
         screen.blit(text_surface, text_rect)

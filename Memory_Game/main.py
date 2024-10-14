@@ -1,7 +1,8 @@
 import pygame
+from event_handler import handle_start_selection_events
 from game import MemoryGame
 from constants import *
-from start_screen import draw_start_screen, check_mouse_click
+from start_screen import draw_start_screen
 
 pygame.init()
 
@@ -22,26 +23,7 @@ def main():
         if not game_started:
             draw_start_screen(DISPLAYSURF)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                elif event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):  # Handle key presses and mouse clicks
-                    if event.type == pygame.KEYDOWN:  # Handle key presses for grid size selection
-                        grid_selection = {
-                            pygame.K_1: GRID_OPTIONS["2x2"],
-                            pygame.K_2: GRID_OPTIONS["3x2"],
-                            pygame.K_4: GRID_OPTIONS["4x4"],
-                            pygame.K_5: GRID_OPTIONS["5x4"],
-                            pygame.K_6: GRID_OPTIONS["6x6"]
-                        }.get(event.key)  # Get grid size based on pressed key
-                    elif event.type == pygame.MOUSEBUTTONDOWN:  # Handle mouse clicks for grid size selection
-                        mouse_pos = pygame.mouse.get_pos()
-                        grid_selection = check_mouse_click(mouse_pos)  # Check mouse click for grid size
-
-                    # If a valid grid size was selected, update the state
-                    if grid_selection:
-                        grid_size = grid_selection
-                        game_started = True
+            grid_size, game_started = handle_start_selection_events(running)
 
         else:
             # Create the window with the selected grid size

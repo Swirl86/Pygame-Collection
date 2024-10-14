@@ -51,7 +51,6 @@ BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-BGCOLOR = (255, 255, 255)  # Background color
 DONUT_COLOR = (255, 200, 200)  # Donut color
 SQUARE_COLOR = (200, 255, 200)  # Square color
 DIAMOND_COLOR = (200, 200, 255)  # Diamond color
