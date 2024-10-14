@@ -3,7 +3,7 @@ import pygame
 # Initialize the font module
 pygame.font.init()
 
-FPS = 60
+FPS = 30
 
 # Dimensions
 INITIAL_SCREEN_SIZE = (600, 500)
@@ -15,8 +15,9 @@ GRID_OPTIONS = {
     "5x4": (5, 4),  # 20 cards total, 10 unique pairs
     "6x6": (6, 6),  # 36 cards total, 18 unique pairs
 }
+MIN_GRID_SIZE = (3, 2)
 PADDING = 10
-
+INFO_TEXT_HEIGHT = 20
 BORDER_WIDTH = 5
 
 # Define the button dimensions
@@ -51,6 +52,7 @@ BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 GRAY = (100, 100, 100)
+ORANGE = (255, 165, 0)
 
 DONUT_COLOR = (255, 200, 200)  # Donut color
 SQUARE_COLOR = (200, 255, 200)  # Square color

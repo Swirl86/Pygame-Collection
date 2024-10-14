@@ -44,6 +44,14 @@ class MemoryGame:
 
             card.draw(screen, x, y, border_color)
 
+        self.draw_info_text(screen)
+
+    def draw_info_text(self, screen):
+        """Draw the info text at the bottom of the screen."""
+        info_text = XS_FONT.render("Press R to Restart or Esc to choose new game", True, ORANGE)
+        info_rect = info_text.get_rect(center=(screen.get_width() // 2, screen.get_height() - 15))
+        screen.blit(info_text, info_rect)
+
     def flip_card(self, index):
         """Flip a card and check for matches."""
         if 0 <= index < len(self.cards):

@@ -24,22 +24,41 @@ def main():
         if not game_started:
             draw_start_screen(DISPLAYSURF)
 
-            grid_size, game_started = handle_start_selection_events(running)
+            grid_size, running = handle_start_selection_events(running)
+            if grid_size:  # Ensure a valid grid size was selected
+                game_started = True  # Set game_started to True if a grid size was chosen
 
         else:
-            # Create the window with the selected grid size
-            window_width = (CARD_SIZE + PADDING) * grid_size[0] + PADDING
-            window_height = (CARD_SIZE + PADDING) * grid_size[1] + PADDING
-            DISPLAYSURF = pygame.display.set_mode((window_width, window_height))  # Update the window size
+            window_grid_size = list(grid_size)
 
-            if game is None:  # Initialize the game only once
-                game = MemoryGame(grid_size)  # Create the game with the selected grid size
+            if window_grid_size[0] < MIN_GRID_SIZE[0]:
+                window_grid_size[0] = MIN_GRID_SIZE[0]
+            if window_grid_size[1] < MIN_GRID_SIZE[1]:
+                window_grid_size[1] = MIN_GRID_SIZE[1]
+
+            window_width = (CARD_SIZE + PADDING) * window_grid_size[0] + PADDING
+            window_height = (CARD_SIZE + PADDING) * window_grid_size[1] + PADDING + INFO_TEXT_HEIGHT
+            DISPLAYSURF = pygame.display.set_mode((window_width, window_height))
+
+            if game is not None:
+                game.grid_size = grid_size
+                game.reset_game()
+            else:
+                game = MemoryGame(grid_size)
 
             while game_started:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         game_started = False
                         running = False
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_r:  # Press 'R' to reset the game
+                            game.reset_game()
+                        elif event.key == pygame.K_ESCAPE:  # Press 'Esc' to go back to the start screen
+                            grid_size = None
+                            game_started = False
+                            game = None  # Reset the game instance
+                            DISPLAYSURF = pygame.display.set_mode(INITIAL_SCREEN_SIZE)
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         mouse_x, mouse_y = event.pos
                         card_x = mouse_x // (CARD_SIZE + PADDING)
@@ -51,11 +70,15 @@ def main():
 
                 # Draw the game
                 DISPLAYSURF.fill(GRAY)  # Clear the screen
-                game.draw(DISPLAYSURF)  # Draw the game state
-                if game.update():  # Update the game state to manage card visibility
+
+                if game is not None:  # Ensure the game instance is initialized
+                    game.draw(DISPLAYSURF)  # Draw the game state
+
+                if game and game.update():  # Update the game state to manage card visibility
                     if not draw_winner_screen():  # Check if the player chooses to quit
-                        running = False  # Quit the game if they chose to quit
-                    game_started = False  # Reset game_started to allow for grid size selection
+                        running = False  # Quit the game
+                    grid_size = None
+                    game_started = False  # Reset grid_size and game_started to allow for grid size selection
 
                 pygame.display.flip()  # Update the display
                 clock.tick(FPS)  # Control the frame rate
