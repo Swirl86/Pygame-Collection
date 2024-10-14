@@ -6,6 +6,9 @@ from card import Card
 class MemoryGame:
     def __init__(self, grid_size):
         self.grid_size = grid_size
+        self.reset_game()
+
+    def reset_game(self):
         self.cards = self.create_cards()
         self.first_card = None
         self.second_card = None
@@ -28,8 +31,8 @@ class MemoryGame:
     def draw(self, screen):
         """Draw all cards on the screen."""
         for i, card in enumerate(self.cards):
-            x = (i % self.grid_size[0]) * (CARD_SIZE + PADDING)
-            y = (i // self.grid_size[0]) * (CARD_SIZE + PADDING)
+            x = (i % self.grid_size[0]) * (CARD_SIZE + PADDING) + PADDING
+            y = (i // self.grid_size[0]) * (CARD_SIZE + PADDING) + PADDING
             card.draw(screen, x, y)
 
             if card.is_matched:
@@ -81,3 +84,12 @@ class MemoryGame:
                 self.first_card = None
                 self.second_card = None
                 self.waiting = False  # Reset waiting state after handling
+
+        if self.check_for_win():
+            self.reset_game()
+            return True  # Return True to indicate the game is won
+        return False
+
+    def check_for_win(self):
+        """Check if all pairs have been matched."""
+        return all(card.is_matched for card in self.cards)

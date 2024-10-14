@@ -9,6 +9,7 @@ class Card:
 
     def draw(self, screen, x, y, border_color=BLACK):
         """Draw the card on the screen at the specified position."""
+        pygame.draw.rect(screen, WHITE, (x, y, CARD_SIZE, CARD_SIZE))
         if self.is_flipped:
             # Draw the icon based on the type
             if self.icon == 'donut':

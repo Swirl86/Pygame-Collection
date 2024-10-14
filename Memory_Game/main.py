@@ -3,6 +3,7 @@ from event_handler import handle_start_selection_events
 from game import MemoryGame
 from constants import *
 from start_screen import draw_start_screen
+from winner_screen import draw_winner_screen
 
 pygame.init()
 
@@ -27,8 +28,8 @@ def main():
 
         else:
             # Create the window with the selected grid size
-            window_width = grid_size[0] * (CARD_SIZE + PADDING) - PADDING
-            window_height = grid_size[1] * (CARD_SIZE + PADDING) - PADDING
+            window_width = (CARD_SIZE + PADDING) * grid_size[0] + PADDING
+            window_height = (CARD_SIZE + PADDING) * grid_size[1] + PADDING
             DISPLAYSURF = pygame.display.set_mode((window_width, window_height))  # Update the window size
 
             if game is None:  # Initialize the game only once
@@ -49,9 +50,13 @@ def main():
                             game.flip_card(card_index)
 
                 # Draw the game
-                DISPLAYSURF.fill(WHITE)  # Clear the screen with a white background
+                DISPLAYSURF.fill(GRAY)  # Clear the screen
                 game.draw(DISPLAYSURF)  # Draw the game state
-                game.update()  # Update the game state to manage card visibility
+                if game.update():  # Update the game state to manage card visibility
+                    if not draw_winner_screen():  # Check if the player chooses to quit
+                        running = False  # Quit the game if they chose to quit
+                    game_started = False  # Reset game_started to allow for grid size selection
+
                 pygame.display.flip()  # Update the display
                 clock.tick(FPS)  # Control the frame rate
 

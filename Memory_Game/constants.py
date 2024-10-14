@@ -50,6 +50,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+GRAY = (100, 100, 100)
 
 DONUT_COLOR = (255, 200, 200)  # Donut color
 SQUARE_COLOR = (200, 255, 200)  # Square color
