@@ -37,7 +37,7 @@ def main():
                 window_grid_size[1] = MIN_GRID_SIZE[1]
 
             window_width = (CARD_SIZE + PADDING) * window_grid_size[0] + PADDING
-            window_height = (CARD_SIZE + PADDING) * window_grid_size[1] + PADDING + INFO_TEXT_HEIGHT
+            window_height = (CARD_SIZE + PADDING) * window_grid_size[1] + PADDING + BOTTOM_INFO_TEXT_HEIGHT
             DISPLAYSURF = pygame.display.set_mode((window_width, window_height))
 
             if game is not None:
@@ -73,10 +73,12 @@ def main():
 
                 if game is not None:  # Ensure the game instance is initialized
                     game.draw(DISPLAYSURF)  # Draw the game state
+                    game.update_game_timer()  # Update the elapsed time for the timer
 
                 if game and game.update():  # Update the game state to manage card visibility
-                    if not draw_winner_screen():  # Check if the player chooses to quit
+                    if not draw_winner_screen(game.elapsed_time, game.moves):  # Check if the player chooses to quit
                         running = False  # Quit the game
+                    game.reset_game()
                     grid_size = None
                     game_started = False  # Reset grid_size and game_started to allow for grid size selection
 

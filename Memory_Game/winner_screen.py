@@ -2,13 +2,18 @@ import pygame
 from constants import *
 from utils import draw_gradient_background
 
-def draw_winner_screen():
+def draw_winner_screen(elapsed_time, moves):
     """Draw the winner screen to display the victory message and restart option."""
     screen = pygame.display.set_mode(INITIAL_SCREEN_SIZE)
     draw_gradient_background(screen)
     text = XL_FONT.render("You Win!", True, BLACK)
-    text_rect = text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+    text_rect = text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 - 50))
     screen.blit(text, text_rect)
+
+    # Display final score and time
+    score_text = M_FONT.render(f"Time: {elapsed_time}s, Moves: {moves}", True, BLACK)
+    score_rect = score_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+    screen.blit(score_text, score_rect)
 
     restart_text = M_FONT.render("Press R to Restart or Esc to Quit", True, BLACK)
     restart_rect = restart_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 + 50))

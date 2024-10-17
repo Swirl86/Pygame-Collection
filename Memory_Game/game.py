@@ -15,6 +15,9 @@ class MemoryGame:
         self.waiting = False
         self.flip_timer = 0
         self.flip_duration = 1000
+        self.start_time = pygame.time.get_ticks()
+        self.elapsed_time = 0
+        self.moves = 0
 
     def create_cards(self):
         """Create unique pairs of cards and shuffle them."""
@@ -32,7 +35,7 @@ class MemoryGame:
         """Draw all cards on the screen."""
         for i, card in enumerate(self.cards):
             x = (i % self.grid_size[0]) * (CARD_SIZE + PADDING) + PADDING
-            y = (i // self.grid_size[0]) * (CARD_SIZE + PADDING) + PADDING
+            y = (i // self.grid_size[0]) * (CARD_SIZE + PADDING) + PADDING + TOP_INFO_TEXT_HEIGHT
             card.draw(screen, x, y)
 
             if card.is_matched:
@@ -44,9 +47,23 @@ class MemoryGame:
 
             card.draw(screen, x, y, border_color)
 
-        self.draw_info_text(screen)
+        self.draw_top_info_text(screen)
+        self.draw_bottom_info_text(screen)
 
-    def draw_info_text(self, screen):
+    def draw_top_info_text(self, screen):
+        """Draw the timer and move count on the screen."""
+        timer_text = FONT.render(f"Time: {self.elapsed_time}s", True, (255, 255, 255))
+        moves_text = FONT.render(f"Moves: {self.moves}", True, (255, 255, 255))
+
+        # Calculate positions for the text to display on the same line with spacing
+        padding = 20  # Space between timer and moves text
+        timer_x = 10
+        moves_x = timer_x + timer_text.get_width() + padding
+
+        screen.blit(timer_text, (timer_x, 10))
+        screen.blit(moves_text, (moves_x, 10))
+
+    def draw_bottom_info_text(self, screen):
         """Draw the info text at the bottom of the screen."""
         info_text = XS_FONT.render("Press R to Restart or Esc to choose new game", True, ORANGE)
         info_rect = info_text.get_rect(center=(screen.get_width() // 2, screen.get_height() - 15))
@@ -58,6 +75,7 @@ class MemoryGame:
             card = self.cards[index]
             # Allow flipping only if no waiting state and no matches
             if not card.is_flipped and not card.is_matched and not self.waiting:
+                self.moves += 1
                 card.is_flipped = True
                 if self.first_card is None:
                     self.first_card = card
@@ -94,9 +112,12 @@ class MemoryGame:
                 self.waiting = False  # Reset waiting state after handling
 
         if self.check_for_win():
-            self.reset_game()
             return True  # Return True to indicate the game is won
         return False
+
+    def update_game_timer(self):
+        """Update and display the elapsed time."""
+        self.elapsed_time = (pygame.time.get_ticks() - self.start_time) // 1000
 
     def check_for_win(self):
         """Check if all pairs have been matched."""
