@@ -1,25 +1,31 @@
 import random
 from constants import *
+from utils import get_light_color
 
 class Tetris:
     def __init__(self):
         self.grid = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
+        self.border_grid = [[None for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
         self.score = 0
         self.reset_shape()
 
     def new_shape(self):
         """Generate a new random shape with a random color."""
         shape = random.choice(SHAPES)
-        color = random.choice(COLORS)
-        return {'shape': shape, 'color': color}
+        color_name = random.choice(list(COLORS.keys()))
+        color = COLORS[color_name]
+        light_color = LIGHT_COLORS[color_name]
+        return {'shape': shape, 'color': color, 'light_color': light_color}
 
     def reset_shape(self):
         """Reset the current shape and check for collision."""
         self.current_shape = self.new_shape()
         self.current_pos = [0, GRID_WIDTH // 2 - 1]  # Reset position
-        if self.check_collision((0, 0)):  # Check if new shape collides
-            self.merge_shape()  # Merge the shape into the grid if it collides
-            self.clear_lines()  # Clear completed lines
+
+        # Check for collision after resetting the shape
+        if self.check_collision((0, 0)):
+            return True  # Return True to indicate game over
+        return False  # No collision, continue game
 
     def rotate_shape(self):
         """Rotate the current shape."""
@@ -35,7 +41,7 @@ class Tetris:
                     grid_y = y + self.current_pos[0] + offset[0]
                     # Check boundaries and grid collisions
                     if (grid_x < 0 or grid_x >= GRID_WIDTH or
-                            grid_y >= GRID_HEIGHT or 
+                            grid_y >= GRID_HEIGHT or
                             (grid_y >= 0 and self.grid[grid_y][grid_x])):
                         return True
         return False
@@ -46,10 +52,9 @@ class Tetris:
         for y, row in enumerate(shape):
             for x, block in enumerate(row):
                 if block:
-                    # Use color for the grid
+                    # Use the color of the current shape
                     self.grid[y + position[0]][x + position[1]] = self.current_shape['color']
-        # Reset the shape after merging
-        self.reset_shape()
+                    self.border_grid[y + position[0]][x + position[1]] = get_light_color(self.current_shape['color'])
 
     def clear_lines(self):
         """Clear completed lines and update the score."""
@@ -65,8 +70,12 @@ class Tetris:
         if not self.check_collision((1, 0)):
             self.current_pos[0] += 1  # Move down
         else:
-            self.merge_shape()
+            self.merge_shape()  # Merge the shape if it can't drop
             self.clear_lines()  # Clear completed lines
+
+            if self.reset_shape():  # Check for game over after resetting
+                return True  # Indicate game over
+        return False  # Continue the game
 
     def get_current_shape_status(self):
         """Return the current shape and its position."""
