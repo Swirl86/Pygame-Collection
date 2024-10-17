@@ -43,7 +43,7 @@ class MemoryGame:
             elif card.is_flipped:
                 border_color = RED # Red for flipped but unmatched cards
             else:
-                border_color = DARKBLUE  # Default to black for unflipped cards
+                border_color = DARKBLUE  # Default to dark blue for unflipped cards
 
             card.draw(screen, x, y, border_color)
 

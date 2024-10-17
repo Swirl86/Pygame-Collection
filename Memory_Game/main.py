@@ -73,7 +73,7 @@ def main():
 
                 if game is not None:  # Ensure the game instance is initialized
                     game.draw(DISPLAYSURF)  # Draw the game state
-                    game.update_game_timer()  # Update the elapsed time for the timer
+                    game.update_game_timer()
 
                 if game and game.update():  # Update the game state to manage card visibility
                     if not draw_winner_screen(game.elapsed_time, game.moves):  # Check if the player chooses to quit
@@ -82,8 +82,8 @@ def main():
                     grid_size = None
                     game_started = False  # Reset grid_size and game_started to allow for grid size selection
 
-                pygame.display.flip()  # Update the display
-                clock.tick(FPS)  # Control the frame rate
+                pygame.display.flip()
+                clock.tick(FPS)
 
     pygame.quit()
 
