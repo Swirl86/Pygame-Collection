@@ -7,7 +7,7 @@ class Card:
         self.is_flipped = False
         self.is_matched = False
 
-    def draw(self, screen, x, y, border_color=BLACK):
+    def draw(self, screen, x, y, border_color=DARKBLUE):
         """Draw the card on the screen at the specified position."""
         pygame.draw.rect(screen, WHITE, (x, y, CARD_SIZE, CARD_SIZE))
         if self.is_flipped:
@@ -25,9 +25,16 @@ class Card:
             elif self.icon in NUMBERS or self.icon in SYMBOLS:
                 self.draw_text(screen, x, y)
         else:
-            pygame.draw.rect(screen, BLACK, (x, y, CARD_SIZE, CARD_SIZE))
+            pygame.draw.rect(screen, BLUE, (x, y, CARD_SIZE, CARD_SIZE))
+            self.draw_question_mark(screen, x, y)
 
         pygame.draw.rect(screen, border_color, (x, y, CARD_SIZE, CARD_SIZE), BORDER_WIDTH)
+
+    def draw_question_mark(self, screen, x, y):
+        """Draws a question mark on the back of the card."""
+        question_mark = M_FONT.render("?", True, WHITE)
+        text_rect = question_mark.get_rect(center=(x + CARD_SIZE // 2, y + CARD_SIZE // 2))
+        screen.blit(question_mark, text_rect)
 
     def draw_icon(self, screen, color, x, y):
         """Draw the icon on the card (for shapes)."""

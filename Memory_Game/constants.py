@@ -54,6 +54,8 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 GRAY = (100, 100, 100)
 ORANGE = (255, 165, 0)
+BLUE = (70, 130, 180)
+DARKBLUE = (30, 60, 100)
 
 DONUT_COLOR = (255, 200, 200)  # Donut color
 SQUARE_COLOR = (200, 255, 200)  # Square color
