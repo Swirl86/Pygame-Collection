@@ -41,3 +41,39 @@ Run the game by executing the main script:
 </details>
 
 ---
+
+### Memory Game
+
+Memory Game is a classic card-matching game where the player flips over cards to find pairs of identical cards. It challenges short-term memory and concentration, requiring the player to remember previously revealed cards to match all pairs in as few moves as possible.
+
+<details>
+<summary>Gameplay Mechanics</summary>
+
+- **Controls**:
+  - **Mouse**: Click on a card to flip it. Match two identical cards to lock them in the face-up position.
+
+#### Features
+
+- **Grid Size Selection**: Players can choose from different grid sizes, such as 2x2, 3x2, or larger.
+- **Dynamic Game Board**: The number of cards and their placement adjust based on the selected grid size.
+- **Flip Function**: Click on a card to flip it and reveal its content.
+- **Matching Logic**: If two flipped cards are identical, they remain face up otherwise, they flip back.
+- **Scoring**: The player can see their current score or number of moves after the game ends.
+- **Timer**: The player has access to a timer that tracks the duration it takes to complete the game.
+- **Responsive Layout**: The size of the game board and card placement are adjusted to ensure the game looks good even with small grids (like 2x2).
+
+#### How to Play
+
+- At the start of the game, choose a grid size (e.g., 2x2, 3x2, 4x4).
+- Click on two cards to flip them over.
+- If the cards match, they stay face up; if not, they flip back after a short delay.
+- Continue until all pairs of cards are matched!
+
+Run the game by executing the main script:
+   ```bash
+   python main.py
+  ```
+</details>
+
+---
+
