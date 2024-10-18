@@ -1,5 +1,7 @@
+import random
 import sys
 import pygame
+from particle import Particle
 from tetris import Tetris
 from constants import *
 from utils import *
@@ -88,6 +90,50 @@ class Game:
         score_text = L_FONT.render(f'Score: {self.tetris.get_score()}', True, WHITE)
         self.screen.blit(score_text, (GAME_WIDTH + RIGHT_SIDE_MARGIN, 150))
 
+
+    def clear_lines(self):
+        """Clear completed lines and handle explosion effect."""
+        lines_to_clear = self.tetris.get_lines_to_clear()
+
+        for row_index in lines_to_clear:
+            self.explode_line(row_index)
+
+        self.tetris.remove_lines(lines_to_clear)
+        self.tetris.score += len(lines_to_clear)
+
+    def explode_line(self, row_index):
+        """Create a simple explosion effect on the cleared row."""
+        particles = self.get_particles(row_index)
+        explosion_duration = 300
+        explosion_start_time = pygame.time.get_ticks()
+
+        while pygame.time.get_ticks() - explosion_start_time < explosion_duration:
+            self.draw_game_components() # Redraw game components behind the explosion
+            # Update and draw all particles
+            for particle in particles:
+                particle.update()
+                particle.draw(self.game_surface)
+
+            # Blit the game surface to the main screen and update display
+            self.screen.blit(self.game_surface, (20, 20))
+            pygame.display.flip()
+            self.clock.tick(EXPLOSION_FPS)
+            # Remove dead particles
+            particles = [p for p in particles if p.is_alive()]
+
+    def get_particles(self, row_index):
+        particles = []
+        for x in range(GRID_WIDTH):
+            block_color = self.tetris.grid[row_index][x]
+            if block_color != 0:
+                dark_color = get_darken_color(block_color)
+                for _ in range(random.randint(2, 10)):  # Create multiple particles per block
+                    particle_x = (x * BLOCK_SIZE) + random.randint(-BLOCK_SIZE // 2, BLOCK_SIZE // 2)
+                    particle_y = (row_index * BLOCK_SIZE) + random.randint(-BLOCK_SIZE // 2, BLOCK_SIZE // 2)
+                    radius = random.randint(2, 6)
+                    particles.append(Particle(particle_x, particle_y, dark_color, radius))
+        return particles
+
     def draw_paused(self):
         draw_transparent_overlay(self.screen)
         text = XL_FONT.render("PAUSED", True, WHITE)
@@ -156,19 +202,21 @@ class Game:
         """Main game loop."""
         game_paused = False
         while True:
-            if self.tetris.drop_shape():
+            game_over, lines_to_clear = self.tetris.drop_shape()
+            if game_over:
                 self.game_over()
 
             draw_gradient_background(self.screen)
-
             self.draw_game_components()
+
+            if lines_to_clear:
+                self.clear_lines()
 
             # Blit game_surface onto screen, positioning the game grid within the larger window
             self.screen.blit(self.game_surface, (20, 20))  # Position the game grid with some margin
 
             pygame.display.flip()
             self.clock.tick(FPS)
-
             self.checkForQuit()
 
             for event in pygame.event.get():

@@ -33,3 +33,7 @@ def get_light_color(rgb_color):
         if color_value == rgb_color:
             return LIGHT_COLORS[color_name]
     return WHITE
+
+def get_darken_color(color, factor=0.7):
+    r, g, b = color
+    return (int(r * factor), int(g * factor), int(b * factor))

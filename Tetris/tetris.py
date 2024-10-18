@@ -1,6 +1,5 @@
 import random
 from constants import *
-from utils import get_light_color
 
 class Tetris:
     def __init__(self):
@@ -26,14 +25,11 @@ class Tetris:
         self.current_pos = [0, GRID_WIDTH // 2 - 1]  # Reset position
         self.next_shape = self.new_shape()  # Generate the next shape
 
-        # Check for collision after resetting the shape
         if self.check_collision((0, 0)):
             return True  # Return True to indicate game over
         return False  # No collision, continue game
 
     def rotate_shape(self):
-        """Rotate the current shape."""
-        # Correctly rotate the shape while keeping its current color
         self.current_shape['shape'] = [list(row) for row in zip(*self.current_shape['shape'][::-1])]
 
     def check_collision(self, offset):
@@ -59,35 +55,35 @@ class Tetris:
                     # Use the color of the current shape
                     self.grid[y + position[0]][x + position[1]] = self.current_shape['color']
 
-    def clear_lines(self):
-        """Clear completed lines and update the score."""
-        lines_to_clear = [i for i, row in enumerate(self.grid) if all(row)]
+    def get_lines_to_clear(self):
+        """Return a list of completed lines that should be cleared."""
+        return [i for i, row in enumerate(self.grid) if all(row)]
+
+    def remove_lines(self, lines_to_clear):
+        """Remove the lines from the grid after the explosion effect."""
         for i in lines_to_clear:
             del self.grid[i]
             # Add a new empty row at the top
             self.grid.insert(0, [0 for _ in range(GRID_WIDTH)])
-        self.score += len(lines_to_clear)
 
     def drop_shape(self):
         """Drop the current shape down by one block."""
         if not self.check_collision((1, 0)):
-            self.current_pos[0] += 1  # Move down
+            self.current_pos[0] += 1
         else:
             self.merge_shape()  # Merge the shape if it can't drop
-            self.clear_lines()  # Clear completed lines
+            lines_to_clear = self.get_lines_to_clear()  # Get completed lines
 
             if self.reset_shape():  # Check for game over after resetting
-                return True  # Indicate game over
-        return False  # Continue the game
+                return True, []  # Game over, no lines to clear
+            return False, lines_to_clear  # Return the state and lines to clear
+        return False, []  # Not game over, no lines to clear
 
     def get_current_shape_status(self):
-        """Return the current shape and its position."""
         return self.current_shape['shape'], self.current_pos
 
     def get_next_shape_status(self):
-        """Return the next shape's details."""
         return self.next_shape
 
     def get_score(self):
-        """Return the current score."""
         return self.score
