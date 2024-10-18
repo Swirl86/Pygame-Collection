@@ -1,7 +1,8 @@
+import sys
 import pygame
 from tetris import Tetris
 from constants import *
-from utils import get_light_color
+from utils import *
 
 class Game:
     def __init__(self, screen):
@@ -10,6 +11,12 @@ class Game:
         self.game_surface = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
         self.clock = pygame.time.Clock()
         self.tetris = Tetris()
+
+
+    def reset_game(self):
+        """Reset the game state to start a new game."""
+        self.tetris.reset()
+        self.clock = pygame.time.Clock()
 
     def draw_grid(self):
         """Draw the game grid on the game_surface."""
@@ -41,28 +48,59 @@ class Game:
                     pixelx = (x + position[1]) * BLOCK_SIZE
                     pixely = (y + position[0]) * BLOCK_SIZE
 
-                    # Draw the current Tetrimino block on game_surface
+                     # Draw the current Tetrimino block on game_surface
                     pygame.draw.rect(self.game_surface, color,
-                                     (pixelx, pixely, BLOCK_SIZE, BLOCK_SIZE))
+                                    (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2))
 
                     # Draw the light border around the Tetrimino block
                     pygame.draw.rect(self.game_surface, light_color,
-                                     (pixelx, pixely, BLOCK_SIZE, BLOCK_SIZE), BORDER_THICKNESS)
+                                    (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2), BORDER_THICKNESS)
 
     def draw_score(self):
         """Draw the score on the main screen (screen)."""
         score_text = M_FONT.render(f'Score: {self.tetris.get_score()}', True, WHITE)
         self.screen.blit(score_text, (GAME_WIDTH + 50, 50))  # Draw the score to the right of the game grid
 
+    def game_over(self):
+        draw_transparent_overlay(self.screen)
+
+        # Render the winner text and position it in the center
+        text = XL_FONT.render("GAME OVER", True, WHITE)
+        text_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
+        self.screen.blit(text, text_rect)
+
+        # Create a border for the winner text
+        border_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
+        border_rect.inflate_ip(20, 20)
+        pygame.draw.rect(self.screen, WHITE, border_rect, 3)
+
+        # Render the restart text
+        restart_text = M_FONT.render("Click to Restart", True, WHITE)
+        restart_rect = restart_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 50))
+        self.screen.blit(restart_text, restart_rect)
+
+        pygame.display.flip()
+
+        waiting_for_click = True
+        while waiting_for_click:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()  # Exit the game if the window is closed
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if restart_rect.collidepoint(event.pos):
+                        waiting_for_click = False  # Exit the loop to reset the game
+
+        self.reset_game()
+
     def run(self):
         """Main game loop."""
         running = True
         while running:
-            self.screen.fill(BLACK)
-
             if self.tetris.drop_shape():
-                print("Game Over!")  # TODO: Handle game over logic
-                running = False
+                self.game_over()
+
+            self.screen.fill(BLACK)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

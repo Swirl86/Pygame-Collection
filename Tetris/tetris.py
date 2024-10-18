@@ -4,6 +4,10 @@ from utils import get_light_color
 
 class Tetris:
     def __init__(self):
+        self.reset()
+
+    def reset(self):
+        """Reset the game state to start a new game."""
         self.grid = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
         self.score = 0
         self.reset_shape()

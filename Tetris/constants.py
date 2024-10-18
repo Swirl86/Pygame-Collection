@@ -3,7 +3,7 @@ import pygame
 # Initialize the font module
 pygame.font.init()
 
-FPS = 6 # TODO add option to set own speed
+FPS = 10 # TODO add option to set own speed
 
 # Dimensions
 WINDOW_WIDTH, WINDOW_HEIGHT = 640, 640
@@ -26,6 +26,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (70, 130, 180)
 DARKBLUE = (30, 60, 100)
+TRANSPARENT_BLACK = (0, 0, 0, 128)
 
 COLORS = {
     'Cyan': (0, 255, 255),
