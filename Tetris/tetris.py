@@ -22,8 +22,9 @@ class Tetris:
 
     def reset_shape(self):
         """Reset the current shape and check for collision."""
-        self.current_shape = self.new_shape()
+        self.current_shape = self.next_shape if hasattr(self, 'next_shape') else self.new_shape()
         self.current_pos = [0, GRID_WIDTH // 2 - 1]  # Reset position
+        self.next_shape = self.new_shape()  # Generate the next shape
 
         # Check for collision after resetting the shape
         if self.check_collision((0, 0)):
@@ -82,6 +83,10 @@ class Tetris:
     def get_current_shape_status(self):
         """Return the current shape and its position."""
         return self.current_shape['shape'], self.current_pos
+
+    def get_next_shape_status(self):
+        """Return the next shape's details."""
+        return self.next_shape
 
     def get_score(self):
         """Return the current score."""

@@ -56,10 +56,37 @@ class Game:
                     pygame.draw.rect(self.game_surface, light_color,
                                     (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2), BORDER_THICKNESS)
 
+    def draw_next_shape(self):
+        """Draw the next Tetrimino shape on the right side of the game surface."""
+        next_shape = self.tetris.get_next_shape_status()
+        color = next_shape['color']
+        shape = next_shape['shape']
+
+        pygame.draw.rect(self.screen, BLACK, (NEXT_SHAPE_X, NEXT_SHAPE_Y, NEXT_SHAPE_WIDTH + 35, NEXT_SHAPE_HEIGHT + 35))
+        pygame.draw.rect(self.screen, DARKBLUE, (NEXT_SHAPE_X, NEXT_SHAPE_Y, NEXT_SHAPE_WIDTH + 35, NEXT_SHAPE_HEIGHT + 35), 2)  # Border
+
+        # Calculate the center position for the next shape
+        shape_width = len(shape[0]) * BLOCK_SIZE
+        shape_height = len(shape) * BLOCK_SIZE
+
+        # Calculate starting position to center the shape
+        start_x = NEXT_SHAPE_X + (NEXT_SHAPE_WIDTH + 35 - shape_width) // 2
+        start_y = NEXT_SHAPE_Y + (NEXT_SHAPE_HEIGHT + 35 - shape_height) // 2
+
+        for y, row in enumerate(shape):
+            for x, block in enumerate(row):
+                if block:
+                    pixelx = start_x + (x * BLOCK_SIZE)
+                    pixely = start_y + (y * BLOCK_SIZE)
+                    pygame.draw.rect(self.screen, color, (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2))
+
+                    light_color = self.tetris.next_shape['light_color']
+                    pygame.draw.rect(self.screen, light_color, (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2), BORDER_THICKNESS)
+
     def draw_score(self):
         """Draw the score on the main screen (screen)."""
-        score_text = M_FONT.render(f'Score: {self.tetris.get_score()}', True, WHITE)
-        self.screen.blit(score_text, (GAME_WIDTH + 50, 50))  # Draw the score to the right of the game grid
+        score_text = L_FONT.render(f'Score: {self.tetris.get_score()}', True, WHITE)
+        self.screen.blit(score_text, (GAME_WIDTH + RIGHT_SIDE_MARGIN, 150))
 
     def game_over(self):
         draw_transparent_overlay(self.screen)
@@ -69,12 +96,10 @@ class Game:
         text_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
         self.screen.blit(text, text_rect)
 
-        # Create a border for the winner text
         border_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
         border_rect.inflate_ip(20, 20)
         pygame.draw.rect(self.screen, WHITE, border_rect, 3)
 
-        # Render the restart text
         restart_text = M_FONT.render("Click to Restart", True, WHITE)
         restart_rect = restart_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 50))
         self.screen.blit(restart_text, restart_rect)
@@ -102,6 +127,19 @@ class Game:
 
             draw_gradient_background(self.screen)
 
+            # Draw all game components
+            self.draw_grid()
+            self.draw_current_shape()
+            self.draw_next_shape()
+
+            # Blit game_surface onto screen, positioning the game grid within the larger window
+            self.screen.blit(self.game_surface, (20, 20))  # Position the game grid with some margin
+
+            self.draw_score()
+
+            pygame.display.flip()
+            self.clock.tick(FPS)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -116,17 +154,5 @@ class Game:
                         self.tetris.drop_shape()  # TODO: Make the shape drop faster
                     elif event.key == pygame.K_UP:
                         self.tetris.rotate_shape()
-
-            # Draw all game components
-            self.draw_grid()
-            self.draw_current_shape()
-
-            # Blit game_surface onto screen, positioning the game grid within the larger window
-            self.screen.blit(self.game_surface, (20, 20))  # Position the game grid with some margin
-
-            self.draw_score()
-
-            pygame.display.flip()
-            self.clock.tick(FPS)
 
         pygame.quit()
