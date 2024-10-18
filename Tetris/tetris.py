@@ -29,16 +29,51 @@ class Tetris:
             return True  # Return True to indicate game over
         return False  # No collision, continue game
 
+    def rotate(self):
+        return [list(row) for row in zip(*self.current_shape['shape'][::-1])]
+
     def rotate_shape(self):
-        self.current_shape['shape'] = [list(row) for row in zip(*self.current_shape['shape'][::-1])]
+        """Attempt to rotate the current shape, allowing it to rotate if partially off the top."""
+        rotated_shape = self.rotate()
+        original_position = self.current_pos[:]
+
+        new_position = self.current_pos[:]
+
+        # Get the dimensions of the rotated shape
+        shape_width = len(rotated_shape[0])
+
+        # Check for left and right boundaries
+        if new_position[1] < 0:  # If it's beyond the left edge
+            new_position[1] = 0  # Push it to the left boundary
+        elif new_position[1] + shape_width > GRID_WIDTH:  # If it's beyond the right edge
+            new_position[1] = GRID_WIDTH - shape_width  # Push it to the right boundary
+
+        # Allow rotation even if the shape is partially off the top
+        if original_position[0] < 0:  # If the original position is off the top
+            new_position[0] = 0
+
+        # After adjusting, check for any collisions in the new position
+        if not self.check_rotation_collision(new_position, rotated_shape):
+            # If there's no collision, update the shape and position
+            self.current_shape['shape'] = rotated_shape
+            self.current_pos = new_position
+
+    def check_rotation_collision(self, new_position, rotated_shape):
+        """Check if the rotated shape collides with the walls or filled blocks."""
+        return self.check_collision_at_position(rotated_shape, new_position)
 
     def check_collision(self, offset):
         """Check if the shape collides with the walls or filled blocks."""
-        for y, row in enumerate(self.current_shape['shape']):
+        new_position = [self.current_pos[0] + offset[0], self.current_pos[1] + offset[1]]
+        return self.check_collision_at_position(self.current_shape['shape'], new_position)
+
+    def check_collision_at_position(self, shape, position):
+        """Check if the given shape collides with the walls or filled blocks at the specified position."""
+        for y, row in enumerate(shape):
             for x, block in enumerate(row):
-                if block:  # Check only if there is a block in the shape
-                    grid_x = x + self.current_pos[1] + offset[1]
-                    grid_y = y + self.current_pos[0] + offset[0]
+                if block:  # Only check filled blocks
+                    grid_x = x + position[1]
+                    grid_y = y + position[0]
                     # Check boundaries and grid collisions
                     if (grid_x < 0 or grid_x >= GRID_WIDTH or
                             grid_y >= GRID_HEIGHT or
@@ -52,7 +87,6 @@ class Tetris:
         for y, row in enumerate(shape):
             for x, block in enumerate(row):
                 if block:
-                    # Use the color of the current shape
                     self.grid[y + position[0]][x + position[1]] = self.current_shape['color']
 
     def get_lines_to_clear(self):
