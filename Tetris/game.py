@@ -88,6 +88,21 @@ class Game:
         score_text = L_FONT.render(f'Score: {self.tetris.get_score()}', True, WHITE)
         self.screen.blit(score_text, (GAME_WIDTH + RIGHT_SIDE_MARGIN, 150))
 
+    def draw_paused(self):
+        draw_transparent_overlay(self.screen)
+        text = XL_FONT.render("PAUSED", True, WHITE)
+        text_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
+        self.screen.blit(text, text_rect)
+
+        pygame.display.flip()
+
+        waiting_for_click = True
+        while waiting_for_click:
+            self.checkForQuit()
+            for _ in pygame.event.get([pygame.KEYDOWN, pygame.KEYUP]):
+                waiting_for_click = False
+
+
     def game_over(self):
         draw_transparent_overlay(self.screen)
 
@@ -108,51 +123,68 @@ class Game:
 
         waiting_for_click = True
         while waiting_for_click:
+            self.checkForQuit()
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()  # Exit the game if the window is closed
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if restart_rect.collidepoint(event.pos):
                         waiting_for_click = False  # Exit the loop to reset the game
 
         self.reset_game()
 
+    def terminate(_):
+        pygame.quit()
+        sys.exit()
+
+    def checkForQuit(self):
+        """Check for quit or escape key and handle game termination."""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.terminate()
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    self.terminate()
+            pygame.event.post(event)
+
+
+    def draw_game_components(self):
+        self.draw_grid()
+        self.draw_current_shape()
+        self.draw_next_shape()
+        self.draw_score()
+
     def run(self):
         """Main game loop."""
-        running = True
-        while running:
+        game_paused = False
+        while True:
             if self.tetris.drop_shape():
                 self.game_over()
 
             draw_gradient_background(self.screen)
 
-            # Draw all game components
-            self.draw_grid()
-            self.draw_current_shape()
-            self.draw_next_shape()
+            self.draw_game_components()
 
             # Blit game_surface onto screen, positioning the game grid within the larger window
             self.screen.blit(self.game_surface, (20, 20))  # Position the game grid with some margin
 
-            self.draw_score()
-
             pygame.display.flip()
             self.clock.tick(FPS)
 
+            self.checkForQuit()
+
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_p:
+                        game_paused = not game_paused
+                        if game_paused:
+                            self.draw_paused()
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                         if not self.tetris.check_collision((0, -1)):
                             self.tetris.current_pos[1] -= 1  # Move left
-                    elif event.key == pygame.K_RIGHT:
+                    elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                         if not self.tetris.check_collision((0, 1)):
                             self.tetris.current_pos[1] += 1  # Move right
-                    elif event.key == pygame.K_DOWN:
-                        self.tetris.drop_shape()  # TODO: Make the shape drop faster
-                    elif event.key == pygame.K_UP:
+                    elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                        self.tetris.drop_shape()  # TODO IMPL Make the shape drop faster
+                    elif event.key == pygame.K_UP or event.key == pygame.K_w:
                         self.tetris.rotate_shape()
-
-        pygame.quit()
