@@ -6,7 +6,7 @@ pygame.font.init()
 FPS = 6 # TODO add option to set own speed
 
 # Dimensions
-WINDOW_WIDTH, WINDOW_HEIGHT = 640, 480
+WINDOW_WIDTH, WINDOW_HEIGHT = 640, 640
 BORDER_THICKNESS = 2
 
 GAME_WIDTH, GAME_HEIGHT = 300, 600  # Game Window size

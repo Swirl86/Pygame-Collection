@@ -5,7 +5,6 @@ from utils import get_light_color
 class Tetris:
     def __init__(self):
         self.grid = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
-        self.border_grid = [[None for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
         self.score = 0
         self.reset_shape()
 
@@ -54,7 +53,6 @@ class Tetris:
                 if block:
                     # Use the color of the current shape
                     self.grid[y + position[0]][x + position[1]] = self.current_shape['color']
-                    self.border_grid[y + position[0]][x + position[1]] = get_light_color(self.current_shape['color'])
 
     def clear_lines(self):
         """Clear completed lines and update the score."""
