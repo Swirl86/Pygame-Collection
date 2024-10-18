@@ -20,8 +20,8 @@ class Game:
 
     def draw_grid(self):
         """Draw the game grid on the game_surface."""
-        self.game_surface.fill(BLACK)
-        pygame.draw.rect(self.game_surface, WHITE, (0, 0, GRID_WIDTH * BLOCK_SIZE, GRID_HEIGHT * BLOCK_SIZE), BORDER_THICKNESS)
+        draw_grid_background(self.game_surface)
+        pygame.draw.rect(self.game_surface, DARKBLUE, (0, 0, GRID_WIDTH * BLOCK_SIZE, GRID_HEIGHT * BLOCK_SIZE), BORDER_THICKNESS)
 
         for y in range(len(self.tetris.grid)):
             for x in range(len(self.tetris.grid[y])):
@@ -34,7 +34,7 @@ class Game:
                     # Draw the light border for the grid block
                     light_color = get_light_color(block_color)
                     pygame.draw.rect(self.game_surface, light_color,
-                                     (x * BLOCK_SIZE + 1, y * BLOCK_SIZE + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2), BORDER_THICKNESS)
+                                     (x * BLOCK_SIZE + 1, y * BLOCK_SIZE + 1, BLOCK_SIZE - 1, BLOCK_SIZE - 2), BORDER_THICKNESS)
 
     def draw_current_shape(self):
         """Draw the current Tetrimino on the game_surface."""
@@ -100,7 +100,7 @@ class Game:
             if self.tetris.drop_shape():
                 self.game_over()
 
-            self.screen.fill(BLACK)
+            draw_gradient_background(self.screen)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

@@ -18,6 +18,16 @@ def draw_transparent_overlay(screen):
     overlay.fill(TRANSPARENT_BLACK)
     screen.blit(overlay, (0, 0))
 
+def draw_grid_background(screen, bg_color = BLACK, grid_color = DARKBLUE):
+    """Draw a grid pattern on the background."""
+    screen.fill(bg_color)
+
+    for x in range(0, WINDOW_WIDTH, BLOCK_SIZE):
+        pygame.draw.line(screen, grid_color, (x, 0), (x, WINDOW_HEIGHT))
+
+    for y in range(0, WINDOW_HEIGHT, BLOCK_SIZE):
+        pygame.draw.line(screen, grid_color, (0, y), (WINDOW_WIDTH, y))
+
 def get_light_color(rgb_color):
     for color_name, color_value in COLORS.items():
         if color_value == rgb_color:
