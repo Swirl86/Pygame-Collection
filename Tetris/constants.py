@@ -3,7 +3,7 @@ import pygame
 # Initialize the font module
 pygame.font.init()
 
-FPS = 5 # TODO add option to set own speed
+FPS = 30
 EXPLOSION_FPS = 60
 
 # Dimensions

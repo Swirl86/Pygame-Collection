@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 import pygame
 from particle import Particle
 from tetris import Tetris
@@ -8,17 +9,17 @@ from utils import *
 
 class Game:
     def __init__(self, screen):
-        pygame.init()
         self.screen = screen
         self.game_surface = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
         self.clock = pygame.time.Clock()
         self.tetris = Tetris()
-
+        self.last_drop_time = pygame.time.get_ticks()
 
     def reset_game(self):
         """Reset the game state to start a new game."""
         self.tetris.reset()
         self.clock = pygame.time.Clock()
+        self.last_drop_time = pygame.time.get_ticks()
 
     def draw_grid(self):
         """Draw the game grid on the game_surface."""
@@ -201,19 +202,32 @@ class Game:
     def run(self):
         """Main game loop."""
         game_paused = False
-        while True:
-            game_over, lines_to_clear = self.tetris.drop_shape()
-            if game_over:
-                self.game_over()
+        side_move_delay = 0.1
+        last_side_move = time.time()
 
+        while True:
+            self.current_time = pygame.time.get_ticks()
+
+            # Use fast drop rate if fast dropping is active
+            drop_rate = self.tetris.fast_drop_rate if self.tetris.is_fast_dropping else self.tetris.drop_rate
+
+            # Check if it's time to drop the shape
+            if self.current_time - self.last_drop_time > drop_rate:
+                game_over, lines_to_clear = self.tetris.drop_shape()
+                self.last_drop_time = self.current_time
+
+                if game_over:
+                    self.game_over()
+
+                if lines_to_clear:
+                    self.clear_lines()
+
+            # Drawing and event handling logic
             draw_gradient_background(self.screen)
             self.draw_game_components()
 
-            if lines_to_clear:
-                self.clear_lines()
-
-            # Blit game_surface onto screen, positioning the game grid within the larger window
-            self.screen.blit(self.game_surface, (20, 20))  # Position the game grid with some margin
+            # Blit game_surface onto screen
+            self.screen.blit(self.game_surface, (20, 20))
 
             pygame.display.flip()
             self.clock.tick(FPS)
@@ -225,14 +239,25 @@ class Game:
                         game_paused = not game_paused
                         if game_paused:
                             self.draw_paused()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                        if not self.tetris.check_collision((0, -1)):
-                            self.tetris.current_pos[1] -= 1  # Move left
-                    elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                        if not self.tetris.check_collision((0, 1)):
-                            self.tetris.current_pos[1] += 1  # Move right
                     elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                        self.tetris.drop_shape()  # TODO IMPL Make the shape drop faster
+                        self.tetris.set_fast_drop(False)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                        self.tetris.set_fast_drop(True)
                     elif event.key == pygame.K_UP or event.key == pygame.K_w:
                         self.tetris.rotate_shape()
+
+            # Use pygame.key.get_pressed() to check if left/right keys are held down
+            keys = pygame.key.get_pressed()
+
+            # Check time to control the rate of side movement
+            current_time = time.time()
+
+            if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and current_time - last_side_move > side_move_delay:
+                if not self.tetris.check_collision((0, -1)):
+                    self.tetris.current_pos[1] -= 1  # Move left
+                last_side_move = current_time
+            elif (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and current_time - last_side_move > side_move_delay:
+                if not self.tetris.check_collision((0, 1)):
+                    self.tetris.current_pos[1] += 1  # Move right
+                last_side_move = current_time
