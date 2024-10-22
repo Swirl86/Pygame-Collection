@@ -1,8 +1,10 @@
-import random
+
 import sys
 import time
 import pygame
-from particle import Particle
+from renderer import Renderer
+from input_handler import InputHandler
+from particle_manager import ParticleManager
 from tetris import Tetris
 from constants import *
 from utils import *
@@ -13,6 +15,9 @@ class Game:
         self.game_surface = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
         self.clock = pygame.time.Clock()
         self.tetris = Tetris()
+        self.renderer = Renderer(screen, self.game_surface, self.tetris)
+        self.input_handler = InputHandler(self.tetris)
+        self.particle_manager = ParticleManager(self.game_surface, self.renderer.draw_game_components)
         self.last_drop_time = pygame.time.get_ticks()
 
     def reset_game(self):
@@ -21,119 +26,15 @@ class Game:
         self.clock = pygame.time.Clock()
         self.last_drop_time = pygame.time.get_ticks()
 
-    def draw_grid(self):
-        """Draw the game grid on the game_surface."""
-        draw_grid_background(self.game_surface)
-        pygame.draw.rect(self.game_surface, DARKBLUE, (0, 0, GRID_WIDTH * BLOCK_SIZE, GRID_HEIGHT * BLOCK_SIZE), BORDER_THICKNESS)
-
-        for y in range(len(self.tetris.grid)):
-            for x in range(len(self.tetris.grid[y])):
-                block_color = self.tetris.grid[y][x]
-                if block_color != 0:  # Check for non-empty cells
-                    # Draw the grid block
-                    pygame.draw.rect(self.game_surface, block_color,
-                                     (x * BLOCK_SIZE + 1, y * BLOCK_SIZE + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2))
-
-                    # Draw the light border for the grid block
-                    light_color = get_light_color(block_color)
-                    pygame.draw.rect(self.game_surface, light_color,
-                                     (x * BLOCK_SIZE + 1, y * BLOCK_SIZE + 1, BLOCK_SIZE - 1, BLOCK_SIZE - 2), BORDER_THICKNESS)
-
-    def draw_current_shape(self):
-        """Draw the current Tetrimino on the game_surface."""
-        shape, position = self.tetris.get_current_shape_status()
-        color = self.tetris.current_shape['color']
-        light_color = self.tetris.current_shape['light_color']
-
-        for y, row in enumerate(shape):
-            for x, block in enumerate(row):
-                if block:  # Only draw non-empty blocks
-                    pixelx = (x + position[1]) * BLOCK_SIZE
-                    pixely = (y + position[0]) * BLOCK_SIZE
-
-                     # Draw the current Tetrimino block on game_surface
-                    pygame.draw.rect(self.game_surface, color,
-                                    (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2))
-
-                    # Draw the light border around the Tetrimino block
-                    pygame.draw.rect(self.game_surface, light_color,
-                                    (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2), BORDER_THICKNESS)
-
-    def draw_next_shape(self):
-        """Draw the next Tetrimino shape on the right side of the game surface."""
-        next_shape = self.tetris.get_next_shape_status()
-        color = next_shape['color']
-        shape = next_shape['shape']
-
-        pygame.draw.rect(self.screen, BLACK, (NEXT_SHAPE_X, NEXT_SHAPE_Y, NEXT_SHAPE_WIDTH + 35, NEXT_SHAPE_HEIGHT + 35))
-        pygame.draw.rect(self.screen, DARKBLUE, (NEXT_SHAPE_X, NEXT_SHAPE_Y, NEXT_SHAPE_WIDTH + 35, NEXT_SHAPE_HEIGHT + 35), 2)  # Border
-
-        # Calculate the center position for the next shape
-        shape_width = len(shape[0]) * BLOCK_SIZE
-        shape_height = len(shape) * BLOCK_SIZE
-
-        # Calculate starting position to center the shape
-        start_x = NEXT_SHAPE_X + (NEXT_SHAPE_WIDTH + 35 - shape_width) // 2
-        start_y = NEXT_SHAPE_Y + (NEXT_SHAPE_HEIGHT + 35 - shape_height) // 2
-
-        for y, row in enumerate(shape):
-            for x, block in enumerate(row):
-                if block:
-                    pixelx = start_x + (x * BLOCK_SIZE)
-                    pixely = start_y + (y * BLOCK_SIZE)
-                    pygame.draw.rect(self.screen, color, (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2))
-
-                    light_color = self.tetris.next_shape['light_color']
-                    pygame.draw.rect(self.screen, light_color, (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2), BORDER_THICKNESS)
-
-    def draw_score(self):
-        """Draw the score on the main screen (screen)."""
-        score_text = L_FONT.render(f'Score: {self.tetris.get_score()}', True, WHITE)
-        self.screen.blit(score_text, (GAME_WIDTH + RIGHT_SIDE_MARGIN, 150))
-
-
     def clear_lines(self):
         """Clear completed lines and handle explosion effect."""
         lines_to_clear = self.tetris.get_lines_to_clear()
 
         for row_index in lines_to_clear:
-            self.explode_line(row_index)
+            self.particle_manager.explode_line(row_index, self.tetris, self.screen, self.clock)
 
         self.tetris.remove_lines(lines_to_clear)
         self.tetris.score += len(lines_to_clear)
-
-    def explode_line(self, row_index):
-        """Create a simple explosion effect on the cleared row."""
-        particles = self.get_particles(row_index)
-        explosion_duration = 300
-        explosion_start_time = pygame.time.get_ticks()
-
-        while pygame.time.get_ticks() - explosion_start_time < explosion_duration:
-            self.draw_game_components() # Redraw game components behind the explosion
-            # Update and draw all particles
-            for particle in particles:
-                particle.update()
-                particle.draw(self.game_surface)
-
-            # Blit the game surface to the main screen and update display
-            self.screen.blit(self.game_surface, (20, 20))
-            pygame.display.flip()
-            self.clock.tick(EXPLOSION_FPS)
-            # Remove dead particles
-            particles = [p for p in particles if p.is_alive()]
-
-    def get_particles(self, row_index):
-        particles = []
-        for x in range(GRID_WIDTH):
-            block_color = self.tetris.grid[row_index][x]
-            if block_color != 0:
-                dark_color = get_darken_color(block_color)
-                for _ in range(random.randint(2, 10)):  # Create multiple particles per block
-                    particle_x = (x * BLOCK_SIZE) + random.randint(-BLOCK_SIZE // 2, BLOCK_SIZE // 2)
-                    particle_y = (row_index * BLOCK_SIZE) + random.randint(-BLOCK_SIZE // 2, BLOCK_SIZE // 2)
-                    radius = random.randint(2, 6)
-                    particles.append(Particle(particle_x, particle_y, dark_color, radius))
-        return particles
 
     def draw_paused(self):
         draw_transparent_overlay(self.screen)
@@ -192,18 +93,9 @@ class Game:
                     self.terminate()
             pygame.event.post(event)
 
-
-    def draw_game_components(self):
-        self.draw_grid()
-        self.draw_current_shape()
-        self.draw_next_shape()
-        self.draw_score()
-
     def run(self):
         """Main game loop."""
         game_paused = False
-        side_move_delay = 0.1
-        last_side_move = time.time()
 
         while True:
             self.current_time = pygame.time.get_ticks()
@@ -222,9 +114,8 @@ class Game:
                 if lines_to_clear:
                     self.clear_lines()
 
-            # Drawing and event handling logic
             draw_gradient_background(self.screen)
-            self.draw_game_components()
+            self.renderer.draw_game_components()
 
             # Blit game_surface onto screen
             self.screen.blit(self.game_surface, (20, 20))
@@ -235,6 +126,7 @@ class Game:
 
             for event in pygame.event.get():
                 if event.type == pygame.KEYUP:
+                    self.input_handler.handle_keyup(event)
                     if event.key == pygame.K_p:
                         game_paused = not game_paused
                         if game_paused:
@@ -242,22 +134,8 @@ class Game:
                     elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                         self.tetris.set_fast_drop(False)
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                        self.tetris.set_fast_drop(True)
-                    elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                        self.tetris.rotate_shape()
-
-            # Use pygame.key.get_pressed() to check if left/right keys are held down
+                    self.input_handler.handle_keydown(event)
+            # Handle player input for movement
             keys = pygame.key.get_pressed()
-
-            # Check time to control the rate of side movement
             current_time = time.time()
-
-            if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and current_time - last_side_move > side_move_delay:
-                if not self.tetris.check_collision((0, -1)):
-                    self.tetris.current_pos[1] -= 1  # Move left
-                last_side_move = current_time
-            elif (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and current_time - last_side_move > side_move_delay:
-                if not self.tetris.check_collision((0, 1)):
-                    self.tetris.current_pos[1] += 1  # Move right
-                last_side_move = current_time
+            self.input_handler.handle_movement(keys, self.tetris.current_pos, current_time)
