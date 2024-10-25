@@ -1,3 +1,4 @@
+import os
 import pygame
 
 # Initialize the font module
@@ -28,6 +29,7 @@ FONT = pygame.font.Font(None, 28)
 M_FONT = pygame.font.Font(None, 36)
 L_FONT = pygame.font.Font(None, 52)
 XL_FONT = pygame.font.Font(None, 74)
+ICON_FONT = pygame.font.SysFont("segoeuisymbol", 74)
 
 # Colors
 WHITE = (255, 255, 255)
@@ -67,3 +69,8 @@ SHAPES = [
     [[1, 1, 0], [0, 1, 1]],  # S
     [[0, 1, 1], [1, 1, 0]],  # Z
 ]
+
+SOUNDS_DIR = os.path.join(os.path.dirname(__file__), 'sounds')
+
+SOUND_ON_ICON = '\U0001F50A'  # Unicode for speaker
+SOUND_OFF_ICON = '\U0001F507'  # Unicode for mute

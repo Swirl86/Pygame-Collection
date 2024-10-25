@@ -2,6 +2,7 @@
 import sys
 import time
 import pygame
+from sound_handler import SoundHandler
 from renderer import Renderer
 from input_handler import InputHandler
 from particle_manager import ParticleManager
@@ -15,8 +16,9 @@ class Game:
         self.game_surface = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
         self.clock = pygame.time.Clock()
         self.tetris = Tetris()
+        self.sound_handler = SoundHandler()
         self.renderer = Renderer(screen, self.game_surface, self.tetris)
-        self.input_handler = InputHandler(self.tetris)
+        self.input_handler = InputHandler(self.tetris, self.sound_handler)
         self.particle_manager = ParticleManager(self.game_surface, self.renderer.draw_game_components)
         self.last_drop_time = pygame.time.get_ticks()
 
@@ -35,6 +37,7 @@ class Game:
 
         self.tetris.remove_lines(lines_to_clear)
         self.tetris.score += len(lines_to_clear)
+        self.sound_handler.play_clear_sound()
 
     def draw_paused(self):
         draw_transparent_overlay(self.screen)
@@ -53,6 +56,7 @@ class Game:
 
     def game_over(self):
         draw_transparent_overlay(self.screen)
+        self.sound_handler.play_game_over_sound()
 
         # Render the winner text and position it in the center
         text = XL_FONT.render("GAME OVER", True, WHITE)
@@ -96,6 +100,7 @@ class Game:
     def run(self):
         """Main game loop."""
         game_paused = False
+        sound_icon_position = (GAME_WIDTH + RIGHT_SIDE_MARGIN * 3, 10)
 
         while True:
             self.current_time = pygame.time.get_ticks()
@@ -116,8 +121,12 @@ class Game:
 
             draw_gradient_background(self.screen)
             self.renderer.draw_game_components()
+            # Render the sound icon based on the sound state
+            icon_text = ICON_FONT.render(SOUND_ON_ICON if self.sound_handler.sound_on else SOUND_OFF_ICON, True, (255, 255, 255))
+            self.screen.blit(icon_text, sound_icon_position)
 
-            # Blit game_surface onto screen
+
+            # Blit game_surface onto screen with padding
             self.screen.blit(self.game_surface, (20, 20))
 
             pygame.display.flip()
@@ -135,6 +144,11 @@ class Game:
                         self.tetris.set_fast_drop(False)
                 elif event.type == pygame.KEYDOWN:
                     self.input_handler.handle_keydown(event)
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    icon_rect = icon_text.get_rect(topleft=sound_icon_position)
+                    if icon_rect.collidepoint(event.pos):
+                        self.sound_handler.toggle_sound()
+
             # Handle player input for movement
             keys = pygame.key.get_pressed()
             current_time = time.time()

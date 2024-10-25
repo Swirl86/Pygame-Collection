@@ -2,15 +2,18 @@ import time
 import pygame
 
 class InputHandler:
-    def __init__(self, tetris):
+    def __init__(self, tetris, sound_handler):
         self.tetris = tetris
+        self.sound_handler = sound_handler
         self.last_side_move = time.time()
 
     def handle_keydown(self, event):
         if event.key == pygame.K_DOWN or event.key == pygame.K_s:
+            self.sound_handler.play_drop_sound()
             self.tetris.set_fast_drop(True)
         elif event.key == pygame.K_UP or event.key == pygame.K_w:
             self.tetris.rotate_shape()
+            self.sound_handler.play_rotate_sound()
 
     def handle_keyup(self, event):
         if event.key == pygame.K_DOWN or event.key == pygame.K_s:
