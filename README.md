@@ -2,6 +2,12 @@
 
 A collection of example games I've developed in the process of learning PyGame.
 
+Run this game collection by executing the main script:
+   ```bash
+   python pygame_collection.py
+  ```
+</details>
+
 ---
 ### Pong
 
@@ -33,7 +39,7 @@ A classic two-player Pong game developed using PyGame. The objective is to score
 
 #### How to Play
 
-Run the game by executing the main script:
+Run the game by executing the main script inside game folder:
    ```bash
    python main.py
   ```
@@ -66,7 +72,7 @@ Memory Game is a classic card-matching game where the player flips over cards to
 - If the cards match, they stay face up; if not, they flip back after a short delay.
 - Continue until all pairs of cards are matched!
 
-Run the game by executing the main script:
+Run the game by executing the main script inside game folder:
    ```bash
    python main.py
   ```
@@ -96,7 +102,7 @@ The game ends when the stack of Tetriminos reaches the top of the screen.
 - **Score Tracking**: Keep track of your score as you clear lines.
 - **Pause Functionality**: Pause the game anytime with a simple key press.
 
-Run the game by executing the main script:
+Run the game by executing the main script inside game folder:
    ```bash
    python main.py
   ```
