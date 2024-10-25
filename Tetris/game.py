@@ -21,12 +21,14 @@ class Game:
         self.input_handler = InputHandler(self.tetris, self.sound_handler)
         self.particle_manager = ParticleManager(self.game_surface, self.renderer.draw_game_components)
         self.last_drop_time = pygame.time.get_ticks()
+        self.speed_increase = 1
 
     def reset_game(self):
         """Reset the game state to start a new game."""
         self.tetris.reset()
         self.clock = pygame.time.Clock()
         self.last_drop_time = pygame.time.get_ticks()
+        self.speed_increase = 1
 
     def clear_lines(self):
         """Clear completed lines and handle explosion effect."""
@@ -38,6 +40,11 @@ class Game:
         self.tetris.remove_lines(lines_to_clear)
         self.tetris.score += len(lines_to_clear)
         self.sound_handler.play_clear_sound()
+        self.update_drop_rate()  # Update drop rate based on score
+
+    def update_drop_rate(self):
+        level = calculate_level(self.tetris.score)
+        self.tetris.drop_rate = max(50, 500 - (level * 50))
 
     def draw_paused(self):
         draw_transparent_overlay(self.screen)
@@ -100,7 +107,7 @@ class Game:
     def run(self):
         """Main game loop."""
         game_paused = False
-        sound_icon_position = (GAME_WIDTH + RIGHT_SIDE_MARGIN * 3, 10)
+        sound_icon_position = (GAME_WIDTH + RIGHT_SIDE_MARGIN * 3, 5)
 
         while True:
             self.current_time = pygame.time.get_ticks()

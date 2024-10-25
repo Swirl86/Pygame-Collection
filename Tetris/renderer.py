@@ -53,6 +53,9 @@ class Renderer:
         for y, row in enumerate(shape):
             for x, block in enumerate(row):
                 if block:
+                    next_text = L_FONT.render("Next", True, WHITE)
+                    self.screen.blit(next_text, (GAME_WIDTH + RIGHT_SIDE_MARGIN, 235))
+
                     pixelx = start_x + (x * BLOCK_SIZE)
                     pixely = start_y + (y * BLOCK_SIZE)
                     pygame.draw.rect(self.screen, color, (pixelx, pixely, BLOCK_SIZE - 2, BLOCK_SIZE - 2))
@@ -61,11 +64,17 @@ class Renderer:
 
     def draw_score(self):
         """Draw the score on the main screen (screen)."""
-        score_text = L_FONT.render(f'Score: {self.tetris.get_score()}', True, WHITE)
-        self.screen.blit(score_text, (GAME_WIDTH + RIGHT_SIDE_MARGIN, 150))
+        score_text = M_FONT.render(f'Score: {self.tetris.get_score()}', True, WHITE)
+        self.screen.blit(score_text, (GAME_WIDTH + RIGHT_SIDE_MARGIN, 160))
+
+    def draw_level(self):
+        """Draw the level on the main screen (screen)."""
+        score_text = M_FONT.render(f'Level: {(calculate_level(self.tetris.get_score()) + 1)}', True, WHITE)
+        self.screen.blit(score_text, (GAME_WIDTH + RIGHT_SIDE_MARGIN, 110))
 
     def draw_game_components(self):
         self.draw_grid()
         self.draw_current_shape()
         self.draw_next_shape()
         self.draw_score()
+        self.draw_level()

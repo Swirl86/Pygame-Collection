@@ -27,7 +27,7 @@ class SoundHandler:
             # Set volumes for sound effects
             self.game_over_sound.set_volume(0.5)
             self.clear_sound.set_volume(0.2)
-            self.rotate_sound.set_volume(0.1)
+            self.rotate_sound.set_volume(0.02)
             self.drop_sound.set_volume(0.2)
             self.hard_drop_sound.set_volume(0.2)
 
