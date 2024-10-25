@@ -61,13 +61,13 @@ LIGHT_COLORS = {
 
 # Tetrimino shapes
 SHAPES = [
-    [[1, 1, 1, 1]],  # I
-    [[1, 1], [1, 1]],  # O
-    [[0, 1, 0], [1, 1, 1]],  # T
-    [[1, 0, 0], [1, 1, 1]],  # L
-    [[0, 0, 1], [1, 1, 1]],  # J
-    [[1, 1, 0], [0, 1, 1]],  # S
-    [[0, 1, 1], [1, 1, 0]],  # Z
+    ( [[1, 1, 1, 1]], 'Cyan' ),  # I shape
+    ( [[1, 1], [1, 1]], 'Yellow' ),  # O shape
+    ( [[0, 1, 0], [1, 1, 1]], 'Purple' ),  # T shape
+    ( [[1, 0, 0], [1, 1, 1]], 'Blue' ),  # L shape
+    ( [[0, 0, 1], [1, 1, 1]], 'Red' ),  # J shape
+    ( [[1, 1, 0], [0, 1, 1]], 'Green' ),  # S shape
+    ( [[0, 1, 1], [1, 1, 0]], 'Orange' ),  # Z shape
 ]
 
 SOUNDS_DIR = os.path.join(os.path.dirname(__file__), 'sounds')

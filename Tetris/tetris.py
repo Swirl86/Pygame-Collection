@@ -16,8 +16,7 @@ class Tetris:
 
     def new_shape(self):
         """Generate a new random shape with a random color."""
-        shape = random.choice(SHAPES)
-        color_name = random.choice(list(COLORS.keys()))
+        shape, color_name = random.choice(SHAPES)
         color = COLORS[color_name]
         light_color = LIGHT_COLORS[color_name]
         return {'shape': shape, 'color': color, 'light_color': light_color}
