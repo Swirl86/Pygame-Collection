@@ -1,3 +1,4 @@
+import os
 import pygame
 
 # Initialize the font module
@@ -46,4 +47,4 @@ M_FONT = pygame.font.Font(None, 36)
 L_FONT = pygame.font.Font(None, 52)
 XL_FONT = pygame.font.Font(None, 74)
 
-PIXEL_FONT = pygame.font.Font("fonts/pixel_font.ttf", 64)
+PIXEL_FONT = pygame.font.Font(os.path.join(os.path.dirname(__file__), 'fonts', 'pixel_font.ttf'), 64)
