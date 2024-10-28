@@ -1,7 +1,7 @@
-
 import sys
 import time
 import pygame
+from difficulty import Difficulty
 from sound_handler import SoundHandler
 from renderer import Renderer
 from input_handler import InputHandler
@@ -11,7 +11,7 @@ from constants import *
 from utils import *
 
 class Game:
-    def __init__(self, screen):
+    def __init__(self, screen, selected_difficulty_str):
         self.screen = screen
         self.game_surface = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
         self.clock = pygame.time.Clock()
@@ -22,6 +22,7 @@ class Game:
         self.particle_manager = ParticleManager(self.game_surface, self.renderer.draw_game_components)
         self.last_drop_time = pygame.time.get_ticks()
         self.speed_increase = 1
+        self.difficulty = Difficulty.get_by_value(selected_difficulty_str)
 
     def reset_game(self):
         """Reset the game state to start a new game."""
@@ -38,13 +39,26 @@ class Game:
             self.particle_manager.explode_line(row_index, self.tetris, self.screen, self.clock)
 
         self.tetris.remove_lines(lines_to_clear)
-        self.tetris.score += len(lines_to_clear)
+
+        lines_cleared = len(lines_to_clear)
+        level_increase = calculate_level(lines_cleared)
+        self.tetris.level += level_increase
+        score_increase = self.difficulty.point_increment
+        self.tetris.score += lines_cleared * score_increase
+
         self.sound_handler.play_clear_sound()
-        self.update_drop_rate()  # Update drop rate based on score
+        self.update_drop_rate()
 
     def update_drop_rate(self):
-        level = calculate_level(self.tetris.score)
-        self.tetris.drop_rate = max(50, 500 - (level * 50))
+        level = self.tetris.level
+        if self.difficulty == Difficulty.NONE:
+            self.tetris.drop_rate = SLOWEST_DROP_RATE
+        elif self.difficulty == Difficulty.EASY:
+            self.tetris.drop_rate = max(FASTEST_DROP_RATE, SLOWEST_DROP_RATE - (level * 50))
+        elif self.difficulty == Difficulty.MEDIUM:
+            self.tetris.drop_rate = max(FASTEST_DROP_RATE, SLOWEST_DROP_RATE - (level * 100))
+        elif self.difficulty == Difficulty.HARD:
+            self.tetris.drop_rate = max(FASTEST_DROP_RATE, SLOWEST_DROP_RATE - (level * 150))
 
     def draw_paused(self):
         draw_transparent_overlay(self.screen)

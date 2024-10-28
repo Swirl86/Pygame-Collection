@@ -9,8 +9,9 @@ class Tetris:
         """Reset the game state to start a new game."""
         self.grid = [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
         self.score = 0
-        self.drop_rate = 500
-        self.fast_drop_rate = 50
+        self.level = 1
+        self.drop_rate = SLOWEST_DROP_RATE
+        self.fast_drop_rate = FASTEST_DROP_RATE
         self.is_fast_dropping = False
         self.reset_shape()
 

@@ -38,5 +38,5 @@ def get_darken_color(color, factor=0.7):
     r, g, b = color
     return (int(r * factor), int(g * factor), int(b * factor))
 
-def calculate_level(score):
-    return int(score / 5) # Go up one level every 5 points
+def calculate_level(lines_cleared):
+    return int(lines_cleared / 5)
